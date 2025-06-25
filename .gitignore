@@ -1,0 +1,71 @@
+# === Node.js dependencies and build ===
+node_modules/
+.pnp
+.pnp.js
+/build
+/build/
+dist
+.next
+.nuxt
+out
+.cache
+.parcel-cache
+.serverless/
+.fusebox/
+.docusaurus
+.web_modules/
+.vitepress/dist
+.vitepress/cache
+.vuepress/dist
+
+# === Logs and debug ===
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# === Diagnostic reports ===
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# === Runtime data ===
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# === Cache ===
+.nyc_output
+bower_components
+jspm_packages/
+.yarn-integrity
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.cache/
+.grunt/
+.eslintcache
+.stylelintcache
+.tsbuildinfo
+.lock-wscript
+.node_repl_history
+
+# === Coverage ===
+coverage/
+*.lcov
+
+# === Misc ===
+.DS_Store
+*.tgz
+.env
+.env.*
+!.env.example
+
+# === Editor / tool configs ===
+.vscode-test
+
+back-end/images/*
+back-end/certs/*
+back-end/secure/*

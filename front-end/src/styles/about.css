@@ -1,0 +1,49 @@
+.about-image {
+    width: 80vw;
+}
+
+.about-text {
+    font-size: min(max(0.9vw, 13px), 15px);
+    margin-top: 20px;
+}
+
+.about-title {
+    font-size: min(max(1.1vw, 15px), 17px);
+    font-weight: bold;
+    margin-top: 0px;
+}
+
+.box {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.about-holder {
+    /* flex: 1 0 auto; */
+    flex: 1;
+}
+
+@media (min-width: 720px) {
+    .d-special-block {
+        display: block !important;
+    }
+    .d-special-none {
+        display: none !important;
+    }
+    .about-image {
+        width: min(max(33vw, 300px), 500px);
+    }
+}
+
+@media (min-width: 1834px) {
+    .about-text {
+        font-size: 15px;
+    }
+    .about-title {
+        font-size: 17px;
+    }
+    .about-image {
+        width: 500px;
+    }
+}

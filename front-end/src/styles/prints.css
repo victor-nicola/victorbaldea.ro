@@ -1,0 +1,144 @@
+.preview {
+    overflow: hidden;
+    width: fit-content;
+    height: fit-content;
+}
+
+.preview img {
+    object-fit: cover;   
+}
+
+.vertical-list {
+    padding: 0;
+}
+
+.vertical-list li {
+    margin-bottom: 40px;
+    width: fit-content;
+}
+
+.preview img {
+    width: 80vw;
+    height: 54vw;
+}
+
+@media (min-width: 383px) {
+    .preview img {
+        width: 350px;
+        height: 233px;
+    }
+}
+
+@media (min-width: 504px) {
+    .preview img {
+        width: 400px;
+        height: 266px;
+    }
+}
+
+@media (min-width: 636px) {
+    .preview img {
+        width: 500px;
+        height: 333px;
+    }
+}
+
+@media (min-width: 1400px) {
+    .preview img {
+        width: 600px;
+        height: 400px;
+    }
+}
+
+.row {
+    margin-bottom: 40px;
+}
+
+.row:nth-of-type(1) {
+    margin-top: 0px;
+}
+
+.col:nth-of-type(2) {
+    margin-left: 30px;
+}
+
+.about-text {
+    font-size: 3.5vw;
+    padding-left: 10vw;
+    padding-right: 10vw;
+}
+
+.about-title {
+    font-size: 5.5vw;
+    font-weight: bold;
+    margin-top: 0px;
+}
+
+.collage {
+    margin-top: 40px;
+    width: 80vw;
+}
+
+@media (min-width: 444px) {
+    .collage {
+        width: 400px;
+    }
+    .about-title {
+        font-size: 22px;
+    }
+    .about-text {
+        font-size: 15px;
+    }
+}
+
+@media (min-width: 720px) {
+    .collage {
+        width: 500px;
+    }
+    .about-title {
+        font-size: 18px;
+    }
+    .about-title {
+        font-size: 25px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .collage {
+        width: 600px;
+    }
+    .about-title {
+        font-size: 23px;
+    }
+    .about-title {
+        font-size: 30px;
+    }
+}
+
+.title {
+    font-size: 20px !important;
+}
+
+@media (min-width: 383px) { /*more than sm*/
+    .title {
+        font-size: 23px !important;
+    }
+}
+
+@media (min-width: 496px) { /*more than sm*/
+    .title {
+        font-size: 30px !important;
+    }
+}
+
+@media (min-width: 992px) { /*more than md*/
+    .title {
+        font-size: 35px !important;
+    }
+}
+
+@media (min-width: 1524px) { /*more than xxl*/
+    .title {
+        font-size: 40px !important;
+    }
+}

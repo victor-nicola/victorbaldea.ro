@@ -1,0 +1,18 @@
+.slideShow {
+    opacity: 0.5;
+}
+
+.imageSlideShow {
+    height: 100vh;
+    position: absolute;
+    object-fit: cover;
+    object-position: center;
+}
+
+@media (min-width: 432px) {
+    .imageSlideShow {
+        position: absolute;
+        object-fit: cover;
+        object-position: top;
+    }
+}

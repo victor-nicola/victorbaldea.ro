@@ -1,0 +1,43 @@
+.workshops-image {
+    width: 80vw;
+}
+
+.workshops-text {
+    font-size: min(max(0.9vw, 13px), 15px);
+    margin-top: 20px;
+}
+
+.workshops-title {
+    font-size: min(max(1.1vw, 15px), 17px);
+    font-weight: bold;
+    margin-top: 0px;
+}
+
+.box {
+    display: flex;
+    flex-flow: column;
+    height: 100vh;
+}
+
+.workshops-holder {
+    /* flex: 1 0 auto; */
+    flex: 1;
+}
+
+@media (min-width: 992px) {
+    .workshops-image {
+        width: min(35vw, 700px);
+    }
+}
+
+@media (min-width: 1834px) {
+    .workshops-text {
+        font-size: 15px;
+    }
+    .workshops-title {
+        font-size: 17px;
+    }
+    .workshops-image {
+        width: 700px;
+    }
+}
