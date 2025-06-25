@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useRef, useEffect, useState } from 'react';
-import '../styles/workshops.css';
-import { BASE_URL } from '../api/axios';
+import '../../styles/workshops.css';
+import { BASE_URL } from '../../api/axios';
 
 function Workshops() {
     const navbarRef = useRef();

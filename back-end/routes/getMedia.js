@@ -2,7 +2,7 @@ const router = require('express').Router();
 const fs = require('fs').promises;
 const path = require('path');
 
-router.get('/getSlideshowImages', async (req, res) => {
+router.post('/getSlideshowImages', async (req, res) => {
   try {
     const pcFiles = await fs.readdir('./images/slideshow/pc');
     const mobileFiles = await fs.readdir('./images/slideshow/mobile');
