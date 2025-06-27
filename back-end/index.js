@@ -31,10 +31,6 @@ app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 app.use('/images', express.static('images'));
 
-app.post('/test', (req, res) => {
-  return res.send('test');
-});
-
 // public routes
 app.use('/api', auth);
 app.use('/api', refreshToken);

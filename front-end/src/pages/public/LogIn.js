@@ -46,7 +46,7 @@ function LogIn() {
         e.preventDefault();
         try {
             const response = await axios.post('/login',
-                JSON.stringify({password: password}),
+                {password: password},
                 {
                     headers: {'Content-Type': 'application/json'},
                     withCredentials: true,
@@ -61,16 +61,16 @@ function LogIn() {
             navigate('/dashboard');
 
         } catch (err) {
-                setPassword('');
+            setPassword('');
 
-                if (!err?.response) {
-                    alert('Serverul nu a răspuns');
-                } else if (err.response?.status === 400) {
-                    alert('Parola incorectă');
-                } else {
-                    alert('Logarea nu s-a putut efectua');
-                }
+            if (!err?.response) {
+                alert('Serverul nu a răspuns');
+            } else if (err.response?.status === 400) {
+                alert('Parola incorectă');
+            } else {
+                alert('Logarea nu s-a putut efectua');
             }
+        }
     };
 
     return (

@@ -121,14 +121,14 @@ function Workshops() {
                         </div>
                     </div>
                     <div className="col-6">
-                        <img src={`${BASE_URL}/images/workshops.jpg`} className="center-in-col workshops-image" alt="Victor Baldea at a workshop"/>
+                        <img src={`${BASE_URL}/images/workshops.jpg`} className="center-in-col workshops-image" alt=""/>
                     </div>
                 </div>
             </div>
             
             <div className="container-fluid d-md-none workshops-holder py-3">
                 
-                <img src={`${BASE_URL}/images/workshops.jpg`} className="workshops-image center-horizontal-relative" alt="Victor Baldea at a workshop"/>
+                <img src={`${BASE_URL}/images/workshops.jpg`} className="workshops-image center-horizontal-relative" alt=""/>
             
                 <div className="center-horizontal-relative px-3">
                     <p className="workshops-text">

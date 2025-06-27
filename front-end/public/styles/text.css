@@ -6,6 +6,23 @@ p, pre {
     font-size: 22px;
 }
 
+.markdown p, pre, li, h1, h2, h3, h4, h5, h6 {
+    font-family: 'Raleway', sans-serif;
+    color: white;
+}
+
+.markdown hr {
+    border: none;
+    color: transparent;
+    height: 0px;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.markdown p, pre, li {
+    font-size: min(max(0.9vw, 13px), 15px) !important;
+}
+
 .biggerP {
     font-size: 30px !important;
 }

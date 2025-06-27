@@ -7,8 +7,8 @@ import LogIn from './pages/public/LogIn';
 import Dashboard from './pages/private/Dashboard';
 import RedirectIfAuth from './wrappers/RedirectIfAuth';
 import RequireAuth from './wrappers/RequireAuth';
+import EditAbout from './pages/private/EditAbout';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-
 
 function AppRoutes() {
   const { loading } = useAuth();
@@ -23,12 +23,17 @@ function AppRoutes() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/log-in" element={
           <RedirectIfAuth>
-          <LogIn />
+            <LogIn />
           </RedirectIfAuth>
         } />
         <Route path="/dashboard" element={
           <RequireAuth>
-          <Dashboard />
+            <Dashboard />
+          </RequireAuth>
+        } />
+        <Route path="/edit-about" element={
+          <RequireAuth>
+            <EditAbout />
           </RequireAuth>
         } />
       </Routes>

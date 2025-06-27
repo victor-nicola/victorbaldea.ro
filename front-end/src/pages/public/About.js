@@ -136,14 +136,14 @@ function About() {
                         </div>
                     </div>
                     <div className="col-6">
-                        <img src={`${BASE_URL}/images/poza-about.png`} className="center-in-col about-image" alt='Victor Baldea' />
+                        <img src={`${BASE_URL}/images/poza-about.png`} className="center-in-col about-image" alt='' />
                     </div>
                 </div>
             </div>
             
             <div className="container-fluid d-special-none about-holder pt-5 pb-5">
                 
-                <img src={`${BASE_URL}/images/poza-about.png`} className="about-image center-horizontal-relative" alt='Victor Baldea' />
+                <img src={`${BASE_URL}/images/poza-about.png`} className="about-image center-horizontal-relative" alt='' />
             
                 <div className="center-horizontal-relative ps-3 pe-3">
                     <p className="about-text">
