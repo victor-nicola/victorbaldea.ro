@@ -78,7 +78,7 @@ router.post('/login', async (req, res) => {
   }
 
   // Create new tokens
-  const accessToken = jwt.sign({ role: 'admin' }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+  const accessToken = jwt.sign({ role: 'admin' }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '5m' });
   const refreshToken = jwt.sign({ role: 'admin' }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
 
   refreshTokenArray.push(refreshToken);

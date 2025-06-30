@@ -7,3 +7,8 @@ export default axios.create({
   baseURL: BASE_URL + '/api',
   withCredentials: false,
 });
+
+export const axiosPrivate = axios.create({
+  baseURL: BASE_URL + '/api',
+  withCredentials: false,
+});

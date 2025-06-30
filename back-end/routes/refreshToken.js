@@ -49,7 +49,7 @@ router.post('/getAccessToken', async(req, res) => {
       const { exp } = decoded;
       if (Date.now() >= exp * 1000)
         return res.sendStatus(403); // expired token
-      const accessToken = jwt.sign({role: 'admin'}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '15m'});
+      const accessToken = jwt.sign({role: 'admin'}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '5m'});
       res.json({accessToken});
     }
   );

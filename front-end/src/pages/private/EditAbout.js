@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom';
-import { useRef, useEffect, useState } from 'react';
-import axios, { BASE_URL } from '../../api/axios';
+import { useRef, useEffect, useState, useCallback } from 'react';
+import { BASE_URL } from '../../api/axios';
 import ReactMarkdown from 'react-markdown';
+import imageCompression from "browser-image-compression";
 import '../../styles/edit-static.css';
+import { useAuth } from '../../contexts/AuthContext';
+import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 
 function EditAbout() {
     const navbarRef = useRef();
@@ -12,39 +15,93 @@ function EditAbout() {
 
     const [editing, setEditing] = useState(false);
     const [text, setText] = useState('');
+
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [previewURL, setPreviewURL] = useState(null);
     
-    const getText = async() => {
+    const {accessToken} = useAuth();
+    const {axiosPrivate} = useAxiosPrivate();
+
+    const getText = useCallback(async() => {
         try {
-            const response = await axios.post('/getText', {file: 'about'}, {});
+            const response = await axiosPrivate.post('/getText', {file: 'about'}, {});
             setText(response?.data);
         } catch (err) {
             if (!err?.response) {
                 alert('Serverul nu a răspuns');
             }
         }
-    };
+    }, [axiosPrivate]);
 
     useEffect(() => {
         getText();
-    }, []);
+    }, [getText]);
 
     const saveText = async() => {
         try {
-            const response = await axios.post('/saveText', {text: text, file: 'about'}, {});
+            const response = await axiosPrivate.post('/saveText', {text: text, file: 'about'},
+            {
+                headers: {'Authorization': `Bearer ${accessToken}`},
+                withCredentials: true
+            });
             alert(response?.data);
         } catch (err) {
             if (!err?.response) {
-                alert('Serverul nu a răspuns');
+                alert('Serverul nu a raspuns');
             }
         }
     };
 
-    const selectImage = () => {
+    const handleSelectFile = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
+        console.log("Original file size:", file.size / 1024, "KB");
+
+        // Compress the image
+        const options = {
+            maxSizeMB: 2,             // Target max size (e.g., 1 MB)
+            maxWidthOrHeight: 1920,   // Resize if needed
+            useWebWorker: true
+        };
+
+        try {
+            const compressedFile = await imageCompression(file, options);
+
+            console.log("Compressed file size:", compressedFile.size / 1024, "KB");
+
+            // Update preview URL
+            const preview = URL.createObjectURL(compressedFile);
+
+            setSelectedFile(compressedFile);
+            setPreviewURL(preview);
+        } catch (error) {
+            console.error("Compression error:", error);
+        }
     };
 
-    const saveImage = () => {
+    const saveImage = async () => {
+        if (!selectedFile) {
+            alert("Please select an image first.");
+            return;
+        }
 
+        const formData = new FormData();
+        formData.append("image", selectedFile);
+        formData.append("file", 'about');
+
+        try {
+            const response = await axiosPrivate.post("/saveImage", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+                withCredentials: true
+            });
+
+            console.log("Upload successful:", response.data);
+            alert("Upload successful!");
+        } catch (error) {
+            console.error("Upload failed:", error);
+            alert("Upload failed.");
+        }
     };
 
     const closeMenu = () => setMenuVisible(false);
@@ -130,7 +187,7 @@ function EditAbout() {
                                     <textarea
                                         value={text}
                                         onChange={(e) => setText(e.target.value)}
-                                        placeholder="Write something about you"
+                                        placeholder="Scrie ceva despre tine"
                                         className='text-input markdown'
                                         required
                                         autoFocus
@@ -152,9 +209,16 @@ function EditAbout() {
                     </div>
                     <div className="col-6">
                         <div className='center-in-col'>
-                            <img src={`${BASE_URL}/images/poza-about.png`} className="about-image d-block" style={{justifySelf: 'center'}} alt='' />
+                            <img src={previewURL ? previewURL : `${BASE_URL}/images/poza-about.png`} className="about-image d-block" alt='' />
                             <div className='btn-bar mt-3'>
-                                <button type="button" className="btn btn-outline-danger me-3" onClick={() => selectImage()}>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    style={{ display: "none" }}
+                                    id="fileInput"
+                                    onChange={handleSelectFile}
+                                />
+                                <button type="button" className="btn btn-outline-danger me-3" onClick={() => document.getElementById("fileInput").click()}>
                                     <p className='text'>Edit</p>
                                 </button>
                                 <button type="button" className="btn btn-outline-success" onClick={() => saveImage()}>
@@ -170,12 +234,12 @@ function EditAbout() {
                 <div>
                     <img src={`${BASE_URL}/images/poza-about.png`} className="about-image center-horizontal-relative" alt='' />
                     <div className='btn-bar mt-3'>
-                        <button type="button" className="btn btn-outline-danger me-3" onClick={() => selectImage()}>
+                        {/* <button type="button" className="btn btn-outline-danger me-3" onClick={() => selectImage()}>
                             <p className='text'>Edit</p>
                         </button>
                         <button type="button" className="btn btn-outline-success" onClick={() => saveImage()}>
                             <p className='text'>Save</p>
-                        </button>
+                        </button> */}
                     </div>
                 </div>
                 <div>

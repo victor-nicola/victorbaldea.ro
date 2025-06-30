@@ -35,27 +35,9 @@ async function getTextFromFile(file) {
   }
 }
 
-async function writeTextToFile(text, file) {
-  try {
-    await fs.writeFile(file, text, 'utf8');
-    return 'ok';
-  } catch (err) {
-    return err.message;
-  }
-}
-
 router.post('/getText', async(req, res) => {
   const text = await getTextFromFile(path.join(__dirname, `../texts/${req.body.file}`));
   return res.send(text);
-});
-
-router.post('/saveText', async(req, res) => {
-  const msg = await writeTextToFile(req.body.text, path.join(__dirname, `../texts/${req.body.file}`));
-  if (msg === 'ok') {
-    return res.sendStatus(200);
-  } else {
-    return res.status(500).send(msg);
-  }
 });
 
 module.exports = router;

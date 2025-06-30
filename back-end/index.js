@@ -9,9 +9,9 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const auth = require('./routes/auth');
 const refreshToken = require('./routes/refreshToken');
-// const upload = require('./routes/upload');
+const upload = require('./routes/upload');
 const getMedia = require('./routes/getMedia');
-// const verifyJWT = require('./verifyJWT');
+const verifyJWT = require('./verifyJWT');
 
 const app = express();
 
@@ -37,7 +37,7 @@ app.use('/api', refreshToken);
 app.use('/api', getMedia);
 
 // secure routes
-// app.use('/api', verifyJWT, upload);
+app.use('/api', verifyJWT, upload);
 
 // const httpsCredentials = {
 //   key: fs.readFileSync(`${process.env.KEY_PATH}`),

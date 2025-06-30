@@ -1,8 +1,8 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useRef, useEffect, useState } from 'react';
 import '../../styles/contact.css';
-import axios from '../../api/axios';
 import { useAuth } from '../../contexts/AuthContext';
+import axios from '../../api/axios';
 
 function Dashboard() {
     const navbarRef = useRef();
@@ -46,7 +46,7 @@ function Dashboard() {
         return () => window.removeEventListener('resize', updateHeight);
     }, []);
 
-    const logout = async () => {
+    const logout = async() => {
         try {
             await axios.post('/logout', {}, {withCredentials: true});
         } catch (err) {
