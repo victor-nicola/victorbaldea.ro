@@ -1,17 +1,21 @@
-.slideShow {
+.slideshow {
     opacity: 0.5;
     height: 100vh;
 }
 
-.imageSlideShow {
+.imageSlideshow {
     height: 100vh;
     position: absolute;
     object-fit: cover;
     object-position: center;
 }
 
+.btn p {
+  margin: 0;
+}
+
 @media (min-width: 432px) {
-    .imageSlideShow {
+    .imageSlideshow {
         position: absolute;
         object-fit: cover;
         object-position: top;

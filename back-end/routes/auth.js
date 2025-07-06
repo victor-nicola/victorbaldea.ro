@@ -9,107 +9,88 @@ const PASS_FILE = path.join(__dirname, '../secure/pass');
 const TOKENS_FILE = path.join(__dirname, '../secure/tokens');
 
 async function getPassFromFile() {
-  try {
-    const data = await fs.readFile(PASS_FILE, 'utf8');
-    return data;
-  } catch (err) {
-    return null;
-  }
-}
-
-async function writePassToFile(pass) {
-  try {
-    await fs.writeFile(PASS_FILE, pass, 'utf8');
-    return 'ok';
-  } catch (err) {
-    return err.message;
-  }
+    try {
+        const data = await fs.readFile(PASS_FILE, 'utf8');
+        return data;
+    } catch (err) {
+        return null;
+    }
 }
 
 async function getTokensFromFile() {
-  try {
-    const data = await fs.readFile(TOKENS_FILE, 'utf8');
-    return JSON.parse(data);
-  } catch (err) {
-    return [];
-  }
+    try {
+        const data = await fs.readFile(TOKENS_FILE, 'utf8');
+        return JSON.parse(data);
+    } catch (err) {
+        return [];
+    }
 }
 
 async function writeTokensToFile(tokens) {
-  try {
-    await fs.writeFile(TOKENS_FILE, JSON.stringify(tokens), 'utf8');
-    return 'ok';
-  } catch (err) {
-    return err.message;
-  }
+    try {
+        await fs.writeFile(TOKENS_FILE, JSON.stringify(tokens), 'utf8', () => {});
+        return 'ok';
+    } catch (err) {
+        return err.message;
+    }
 }
 
-router.post('/register', async (req, res) => {
-  const hashedPass = await bcrypt.hash(req.body.password, 10);
-  const msg = await writePassToFile(hashedPass);
-  if (msg === 'ok') {
-    return res.sendStatus(200);
-  } else {
-    return res.status(500).send(msg);
-  }
-});
-
 router.post('/login', async (req, res) => {
-  const storedHash = await getPassFromFile();
-  if (!storedHash) return res.status(500).send('Password file not found');
+    const storedHash = await getPassFromFile();
+    if (!storedHash) return res.status(500).send('Password file not found');
 
-  const valid = await bcrypt.compare(req.body.password, storedHash);
-  if (!valid) return res.sendStatus(400);
+    const valid = await bcrypt.compare(req.body.password, storedHash);
+    if (!valid) return res.sendStatus(400);
 
-  // Clean up expired tokens
-  const tokens = await getTokensFromFile();
-  const refreshTokenArray = [];
+    // Clean up expired tokens
+    const tokens = await getTokensFromFile();
+    const refreshTokenArray = [];
 
-  for (const token of tokens) {
-    try {
-      const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
-      const { exp } = decoded;
-      if (Date.now() < exp * 1000) {
-        refreshTokenArray.push(token);
-      }
-    } catch {
-      // skip invalid token
+    for (const token of tokens) {
+        try {
+            const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+            const { exp } = decoded;
+            if (Date.now() < exp * 1000) {
+                refreshTokenArray.push(token);
+            }
+        } catch {
+            // skip invalid token
+        }
     }
-  }
 
-  // Create new tokens
-  const accessToken = jwt.sign({ role: 'admin' }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '5m' });
-  const refreshToken = jwt.sign({ role: 'admin' }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+    // Create new tokens
+    const accessToken = jwt.sign({ role: 'admin' }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '5m' });
+    const refreshToken = jwt.sign({ role: 'admin' }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
 
-  refreshTokenArray.push(refreshToken);
-  await writeTokensToFile(refreshTokenArray);
+    refreshTokenArray.push(refreshToken);
+    await writeTokensToFile(refreshTokenArray);
 
-  res.cookie('refreshToken', refreshToken, {
-    httpOnly: true,
-    secure: false, // true if https
-    sameSite: 'Strict',
-    maxAge: 7 * 24 * 60 * 60 * 1000
-  });
-  res.json({accessToken});
+    res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: false, // true if https
+        sameSite: 'Strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+    res.json({accessToken});
 });
 
 router.post('/logout', async (req, res) => {
-  if (!req.cookies?.refreshToken)
-    return res.sendStatus(400);
-  const refreshToken = req.cookies.refreshToken;
-  if (!refreshToken) return res.sendStatus(400);
+    if (!req.cookies?.refreshToken)
+        return res.sendStatus(400);
+    const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) return res.sendStatus(400);
 
-  let tokens = await getTokensFromFile();
+    let tokens = await getTokensFromFile();
 
-  if (!tokens.includes(refreshToken)) {
-    return res.sendStatus(204); // already logged out
-  }
+    if (!tokens.includes(refreshToken)) {
+        return res.sendStatus(204); // already logged out
+    }
 
-  tokens = tokens.filter(token => token !== refreshToken);
-  await writeTokensToFile(tokens);
+    tokens = tokens.filter(token => token !== refreshToken);
+    await writeTokensToFile(tokens);
 
-  res.clearCookie('refreshToken');
-  res.sendStatus(204);
+    res.clearCookie('refreshToken');
+    res.sendStatus(204);
 });
 
 module.exports = router;

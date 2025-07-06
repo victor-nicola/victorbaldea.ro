@@ -9,9 +9,9 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const auth = require('./routes/auth');
 const refreshToken = require('./routes/refreshToken');
-const upload = require('./routes/upload');
-const getMedia = require('./routes/getMedia');
-const verifyJWT = require('./verifyJWT');
+const static = require('./routes/static');
+const gallery = require('./routes/gallery');
+const slideshow = require('./routes/slideshow');
 
 const app = express();
 
@@ -31,13 +31,12 @@ app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 app.use('/images', express.static('images'));
 
-// public routes
 app.use('/api', auth);
 app.use('/api', refreshToken);
-app.use('/api', getMedia);
 
-// secure routes
-app.use('/api', verifyJWT, upload);
+app.use('/api', static);
+app.use('/api/gallery', gallery);
+app.use('/api', slideshow);
 
 // const httpsCredentials = {
 //   key: fs.readFileSync(`${process.env.KEY_PATH}`),

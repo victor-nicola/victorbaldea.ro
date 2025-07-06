@@ -24,6 +24,14 @@
     flex: 1;
 }
 
+.d-special-block {
+    display: none;
+}
+
+.d-special-none {
+    display: block;
+}
+
 @media (min-width: 720px) {
     .d-special-block {
         display: block !important;

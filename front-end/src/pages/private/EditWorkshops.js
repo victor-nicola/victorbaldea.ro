@@ -3,13 +3,12 @@ import axios, { BASE_URL } from '../../api/axios';
 import ReactMarkdown from 'react-markdown';
 import imageCompression from "browser-image-compression";
 import '../../styles/edit-static.css';
-import '../../styles/about.css';
 import { useAuth } from '../../contexts/AuthContext';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 
-function EditAbout() {
+function EditWorkshops() {
     const [editing, setEditing] = useState(false);
     const [text, setText] = useState('');
 
@@ -41,7 +40,7 @@ function EditAbout() {
 
     const getText = async() => {
         try {
-            const response = await axios.get('/getText/about', {}, {});
+            const response = await axios.get('/getText/workshops', {}, {});
             setText(response?.data);
         } catch (err) {
             if (!err?.response) {
@@ -56,7 +55,7 @@ function EditAbout() {
 
     const saveText = async() => {
         try {
-            const response = await axiosPrivate.post('/saveText/about', {text: text},
+            const response = await axiosPrivate.post('/saveText/workshops', {text: text},
             {
                 headers: {'Authorization': `Bearer ${accessToken}`},
                 withCredentials: true
@@ -110,7 +109,7 @@ function EditAbout() {
         formData.append("image", selectedFile);
 
         try {
-            const response = await axiosPrivate.post("/saveImage/about", formData, {
+            const response = await axiosPrivate.post("/saveImage/workshops", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
                 withCredentials: true
             });
@@ -160,7 +159,7 @@ function EditAbout() {
                                         ref={textareaRef}
                                         value={text}
                                         onChange={(e) => setText(e.target.value)}
-                                        placeholder="Write something about you"
+                                        placeholder="Write something about your workshops"
                                         className='text-input markdown'
                                         required
                                         autoFocus
@@ -182,7 +181,7 @@ function EditAbout() {
                     </div>
                     <div className="col-6">
                         <div className='center-in-col'>
-                            <img src={previewURL ? previewURL : `${BASE_URL}/images/about.png`} className="about-image d-block" alt='' />
+                            <img src={previewURL ? previewURL : `${BASE_URL}/images/workshops.png`} className="workshops-image d-block" alt='' />
                             <div className='btn-bar mt-3'>
                                 <input
                                     type="file"
@@ -205,7 +204,7 @@ function EditAbout() {
             
             <div className="container-fluid d-special-none pt-5 pb-5 flex-fill">
                 <div>
-                    <img src={previewURL ? previewURL : `${BASE_URL}/images/about.png`} className="about-image center-horizontal-relative" alt='' />
+                    <img src={previewURL ? previewURL : `${BASE_URL}/images/workshops.png`} className="workshops-image center-horizontal-relative" alt='' />
                     <div className='btn-bar mt-3'>
                         <input
                             type="file"
@@ -232,7 +231,7 @@ function EditAbout() {
                             <textarea
                                 value={text}
                                 onChange={(e) => setText(e.target.value)}
-                                placeholder="Write something about you"
+                                placeholder="Write something about your workshops"
                                 className='text-input markdown'
                                 required
                                 autoFocus
@@ -258,4 +257,4 @@ function EditAbout() {
     );
 }
 
-export default EditAbout;
+export default EditWorkshops;
