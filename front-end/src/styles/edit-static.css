@@ -16,14 +16,14 @@
     white-space: pre-wrap;
 }
 
-.about-image {
+.about-edit-image {
     width: 80vw;
     position: relative;
     left: 50%;
     transform: translateX(-50%);
 }
 
-.workshops-image {
+.workshops-edit-image {
     width: 80vw;
     position: relative;
     left: 50%;
@@ -31,22 +31,28 @@
 }
 
 @media (min-width: 720px) {
-    .about-image {
+    .about-edit-image {
         width: min(max(33vw, 300px), 500px);
     }
 }
 
+@media (min-width: 768px) { /* when changing layout */
+    .workshops-edit-image {
+        width: 35vw;
+    }
+}
+
 @media (min-width: 992px) {
-    .workshops-image {
+    .workshops-edit-image {
         width: min(35vw, 700px);
     }
 }
 
 @media (min-width: 1834px) {
-    .about-image {
+    .about-edit-image {
         width: 500px;
     }
-    .workshops-image {
+    .workshops-edit-image {
         width: 700px;
     }
 }

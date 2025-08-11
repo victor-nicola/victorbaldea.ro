@@ -1,12 +1,13 @@
 import { useRef, useEffect, useState } from 'react';
 import axios, { BASE_URL } from '../../api/axios';
 import ReactMarkdown from 'react-markdown';
-import imageCompression from "browser-image-compression";
 import '../../styles/edit-static.css';
 import { useAuth } from '../../contexts/AuthContext';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import { useNavigate } from 'react-router-dom';
+import { processImage } from '../../utils/imageProcessor';
 
 function EditWorkshops() {
     const [editing, setEditing] = useState(false);
@@ -19,6 +20,18 @@ function EditWorkshops() {
     const axiosPrivate = useAxiosPrivate();
 
     const textareaRef = useRef();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if ((event.ctrlKey || event.metaKey) && event.code === "KeyS") {
+                event.preventDefault();
+                navigate(`/workshops`);
+            }
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [navigate]);
 
     useEffect(() => {
         const handleKeyDown = (event) => {
@@ -77,15 +90,8 @@ function EditWorkshops() {
 
         console.log("Original file size:", file.size / 1024, "KB");
 
-        // Compress the image
-        const options = {
-            maxSizeMB: 2,             // Target max size (e.g., 1 MB)
-            maxWidthOrHeight: 1920,   // Resize if needed
-            useWebWorker: true
-        };
-
         try {
-            const compressedFile = await imageCompression(file, options);
+            const compressedFile = await processImage(file, 1920, 4);
 
             console.log("Compressed file size:", compressedFile.size / 1024, "KB");
 
@@ -145,7 +151,7 @@ function EditWorkshops() {
         <div style={{overflowX: 'hidden'}} className='default-outer-div'>
             <Header ref={headerRef} />
             
-            <div className="pe-5 d-special-block align-content-center py-4 flex-fill" style={{marginTop: `${headerHeight}px`}}>
+            <div className="pe-5 d-none d-md-block align-content-center py-4 flex-fill" style={{marginTop: `${headerHeight}px`}}>
                 <div className="row ps-5">
                     <div className="col-6">
                         <div className="center-in-col">
@@ -181,7 +187,7 @@ function EditWorkshops() {
                     </div>
                     <div className="col-6">
                         <div className='center-in-col'>
-                            <img src={previewURL ? previewURL : `${BASE_URL}/images/workshops.png`} className="workshops-image d-block" alt='' />
+                            <img src={previewURL ? previewURL : `${BASE_URL}/images/workshops.png`} className="workshops-edit-image d-block" alt='' />
                             <div className='btn-bar mt-3'>
                                 <input
                                     type="file"
@@ -202,9 +208,9 @@ function EditWorkshops() {
                 </div>
             </div>
             
-            <div className="container-fluid d-special-none pt-5 pb-5 flex-fill">
+            <div className="container-fluid d-md-none pt-5 pb-5 flex-fill" style={{marginTop: `${headerHeight}px`}}>
                 <div>
-                    <img src={previewURL ? previewURL : `${BASE_URL}/images/workshops.png`} className="workshops-image center-horizontal-relative" alt='' />
+                    <img src={previewURL ? previewURL : `${BASE_URL}/images/workshops.png`} className="workshops-edit-image center-horizontal-relative" alt='' />
                     <div className='btn-bar mt-3'>
                         <input
                             type="file"

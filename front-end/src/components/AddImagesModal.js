@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import imageCompression from "browser-image-compression";
+import { processImage } from "../utils/imageProcessor";
 
 export default function AddImageModal({ onClose, onSave }) {
     const [files, setFiles] = useState([]);
@@ -43,21 +43,11 @@ export default function AddImageModal({ onClose, onSave }) {
 
         setSaving(true);
 
-        const blobToFile = (blob, filename) => {
-            return new File([blob], filename, { type: blob.type, lastModified: Date.now() });
-        };
-
         try {
             const compressedFiles = await Promise.all(
                 files.map(async (file) => {
                     try {
-                        const compressedBlob = await imageCompression(file, {
-                            maxSizeMB: 0.5,
-                            maxWidthOrHeight: 1920,
-                            useWebWorker: true,
-                        });
-                        // Convert Blob back to File preserving original filename
-                        return blobToFile(compressedBlob, file.name);
+                        return await processImage(file, 1920, 4);
                     } catch (err) {
                         console.error("Error compressing image:", err);
                         return file; // fallback to original file

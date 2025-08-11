@@ -1,7 +1,3 @@
-.workshops-image {
-    width: 80vw;
-}
-
 .workshops-text {
     font-size: min(max(0.9vw, 13px), 15px);
     margin-top: 20px;
@@ -22,6 +18,16 @@
 .workshops-holder {
     /* flex: 1 0 auto; */
     flex: 1;
+}
+
+.workshops-image {
+    width: 80vw;
+}
+
+@media (min-width: 768px) { /* when changing layout */
+    .workshops-image {
+        width: 35vw;
+    }
 }
 
 @media (min-width: 992px) {

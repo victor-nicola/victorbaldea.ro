@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import imageCompression from "browser-image-compression";
+import { processImage } from "../utils/imageProcessor";
 
 export default function AddGalleryModal({ onClose, onSave }) {
     const [name, setName] = useState('');
@@ -30,11 +30,7 @@ export default function AddGalleryModal({ onClose, onSave }) {
         
         if (file) {
             try {
-                finalFile = await imageCompression(file, {
-                    maxSizeMB: 0.5,
-                    maxWidthOrHeight: 800,
-                    useWebWorker: true,
-                });
+                finalFile = await processImage(file, 800, 2);
             } catch (err) {
                 console.error("Error compressing image:", err);
                 alert("Image compression failed.");

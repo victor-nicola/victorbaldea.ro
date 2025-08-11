@@ -81,11 +81,11 @@ function Workshops() {
                 </div>
             </div>
             
-            <div className="container-fluid d-md-none workshops-holder py-3 flex-fill">
+            <div className="container-fluid d-md-none workshops-holder py-3 flex-fill" style={{marginTop: `${headerHeight}px`}}>
                 
                 <img src={`${BASE_URL}/images/workshops.png`} className="workshops-image center-horizontal-relative" alt=""/>
             
-                <div className="center-horizontal-relative px-3">
+                <div className="center-horizontal-relative px-3 pt-4">
                     <div className='markdown'>
                         <ReactMarkdown>{text}</ReactMarkdown>
                     </div>
