@@ -78,35 +78,60 @@ export default function Gallery() {
                 <div
                     className="mt-4"
                     style={{
-                        display: "grid",
-                        gridTemplateColumns: isLargeScreen ? "repeat(2, 1fr)" : "1fr",
-                        rowGap: "45px",
-                        columnGap: isLargeScreen ? "60px" : "0px",
-                        justifyItems: "center",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: "45px",
                         width: "100%",
                         maxWidth: "100%"
                     }}
                 >
-                    {galleries.map((gallery, index) => {
-                        const isLastSingle = isLargeScreen && galleries.length % 2 === 1 && index === galleries.length - 1;
+                    {isLargeScreen ? (
+                        // Large screen: use grid layout
+                        <div
+                            style={{
+                                display: "grid",
+                                gridTemplateColumns: "repeat(2, 1fr)",
+                                rowGap: "45px",
+                                columnGap: "60px",
+                                justifyItems: "center",
+                                width: "100%",
+                                maxWidth: "100%"
+                            }}
+                        >
+                            {galleries.map((gallery, index) => {
+                                const isLastSingle = galleries.length % 2 === 1 && index === galleries.length - 1;
 
-                        return (
+                                return (
+                                    <div
+                                        key={gallery.id}
+                                        style={{
+                                            gridColumn: isLastSingle ? "span 2" : undefined,
+                                            width: "100%",
+                                            display: "flex",
+                                            justifyContent: "center"
+                                        }}
+                                    >
+                                        <GalleryItem gallery={gallery} />
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        // Small screen: use flex layout for perfect centering
+                        galleries.map((gallery) => (
                             <div
                                 key={gallery.id}
                                 style={{
-                                    // backgroundColor: 'red',
-                                    gridColumn: isLastSingle ? "span 2" : undefined,
                                     width: "100%",
                                     display: "flex",
                                     justifyContent: "center"
                                 }}
                             >
-                                <GalleryItem
-                                    gallery={gallery}
-                                />
+                                <GalleryItem gallery={gallery} />
                             </div>
-                        );
-                    })}
+                        ))
+                    )}
                 </div>
             </div>
             
