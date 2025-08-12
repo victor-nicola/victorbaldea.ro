@@ -15,9 +15,9 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { BASE_URL } from "../../api/axios";
-import imageCompression from "browser-image-compression";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
+import { processImage } from "../../utils/imageProcessor";
 
 const SortableItem = ({ id, image, onDelete }) => {
     const {
@@ -54,7 +54,12 @@ const SortableItem = ({ id, image, onDelete }) => {
             </div>
             <button
                 className="btn btn-outline-danger btn-md"
-                onClick={() => onDelete(image.filename)}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(image.filename);
+                }}
+                onPointerDown={(e) => e.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
             >
                 Delete
             </button>
@@ -112,12 +117,7 @@ export default function EditSlideshow() {
 
         // Compress all files immediately and prepare preview
         const compressedPromises = files.map(async (file) => {
-            const options = {
-                maxSizeMB: 2,
-                maxWidthOrHeight: 1920,
-                useWebWorker: true
-            };
-            const compressedFile = await imageCompression(file, options);
+            const compressedFile = await processImage(file, 1920, 4);
             return {
                 file: compressedFile,
                 preview: URL.createObjectURL(compressedFile),

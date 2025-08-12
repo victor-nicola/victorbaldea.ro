@@ -81,7 +81,7 @@ function About() {
                 </div>
             </div>
             
-            <div className="container-fluid d-special-none about-holder pt-5 pb-5 flex-fill">
+            <div className="container-fluid d-special-none about-holder pt-5 pb-5 flex-fill" style={{marginTop: `${headerHeight}px`}}>
                 <img src={`${BASE_URL}/images/about.png`} className="about-image center-horizontal-relative" alt='' />
                 <div className="center-horizontal-relative ps-3 pe-3 pt-4">
                     <div className='markdown'>

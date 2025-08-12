@@ -76,12 +76,15 @@ export default function Gallery() {
 
             <div className="px-4 py-4 flex-fill" style={{marginTop: `${headerHeight}px`}}>
                 <div
-                    className="container-fluid mt-4"
+                    className="mt-4"
                     style={{
                         display: "grid",
                         gridTemplateColumns: isLargeScreen ? "repeat(2, 1fr)" : "1fr",
                         rowGap: "45px",
                         columnGap: isLargeScreen ? "60px" : "0px",
+                        justifyItems: "center",
+                        width: "100%",
+                        maxWidth: "100%"
                     }}
                 >
                     {galleries.map((gallery, index) => {
@@ -91,15 +94,11 @@ export default function Gallery() {
                             <div
                                 key={gallery.id}
                                 style={{
-                                    display: "flex",
+                                    // backgroundColor: 'red',
                                     gridColumn: isLastSingle ? "span 2" : undefined,
-                                    justifyContent: isLastSingle
-                                    ? "center"
-                                    : isLargeScreen
-                                    ? index % 2 === 1
-                                        ? "flex-start"
-                                        : "flex-end"
-                                    : "center",
+                                    width: "100%",
+                                    display: "flex",
+                                    justifyContent: "center"
                                 }}
                             >
                                 <GalleryItem

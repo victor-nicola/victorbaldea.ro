@@ -58,13 +58,11 @@ export default function OpenedGallery() {
                 setLayout(fetchedLayout);
 
                 if (fetchedLayout && Array.isArray(fetchedLayout.imageOrder) && fetchedLayout.imageOrder.length > 0) {
-                    // Order images by layout.imageOrder
                     const orderedImages = [];
                     fetchedLayout.imageOrder.forEach(filename => {
                         const found = fetchedImages.find(img => img.thumb === filename);
                         if (found) orderedImages.push(found);
                     });
-                    // Append images not in imageOrder at the end
                     fetchedImages.forEach(img => {
                         if (!fetchedLayout.imageOrder.includes(img.thumb)) {
                             orderedImages.push(img);
@@ -85,7 +83,6 @@ export default function OpenedGallery() {
         fetchGallery();
     }, [galleryName]);
 
-    // If gallery was deleted, navigate to 404 page
     useEffect(() => {
         if (error) {
             navigate("/404");
@@ -119,6 +116,17 @@ export default function OpenedGallery() {
 
     const masonryColumns = buildColumns();
 
+    // Build row-wise flattened list
+    const flatImagesRowWise = [];
+    const maxRows = Math.max(...masonryColumns.map(col => col.length));
+    for (let row = 0; row < maxRows; row++) {
+        for (let col = 0; col < masonryColumns.length; col++) {
+            if (masonryColumns[col][row]) {
+                flatImagesRowWise.push(masonryColumns[col][row]);
+            }
+        }
+    }
+
     const openModal = (index) => {
         setCurrentIndex(index);
         setModalOpen(true);
@@ -126,17 +134,18 @@ export default function OpenedGallery() {
 
     const closeModal = () => setModalOpen(false);
 
-    const getFlatIndex = (colIdx, imgIdx) => {
-        let index = 0;
-        for (let i = 0; i < colIdx; i++) {
-            index += masonryColumns[i].length;
-        }
-        return index + imgIdx;
+    const getRowWiseFlatIndex = (colIdx, imgIdx) => {
+        const target = masonryColumns[colIdx][imgIdx];
+        return flatImagesRowWise.findIndex(img => img === target);
     };
 
-    const prevSlide = () => setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+    const prevSlide = () => {
+        setCurrentIndex(prev => (prev - 1 + flatImagesRowWise.length) % flatImagesRowWise.length);
+    };
 
-    const nextSlide = () => setCurrentIndex((prev) => (prev + 1) % images.length);
+    const nextSlide = () => {
+        setCurrentIndex(prev => (prev + 1) % flatImagesRowWise.length);
+    };
 
     const headerRef = useRef();
     const [headerHeight, setHeaderHeight] = useState(0);
@@ -151,12 +160,6 @@ export default function OpenedGallery() {
         if (headerRef.current) resizeObserver.observe(headerRef.current);
         return () => resizeObserver.disconnect();
     }, []);
-
-    // const handleModalClick = (e) => {
-    //     if (e.target.classList.contains('modal') || e.target.classList.contains('modal-content')) {
-    //         closeModal();
-    //     }
-    // };
 
     return (
         <div style={{ overflowX: "hidden" }} className="default-outer-div">
@@ -190,7 +193,7 @@ export default function OpenedGallery() {
                                         src={`${BASE_URL}/images/gallery/${galleryName}/${item.thumb}`}
                                         alt=""
                                         className="hover-shadow img-preview"
-                                        onClick={() => openModal(getFlatIndex(ci, i))}
+                                        onClick={() => openModal(getRowWiseFlatIndex(ci, i))}
                                         style={{ cursor: 'pointer', userSelect: 'none' }}
                                     />
                                 </div>
@@ -200,27 +203,26 @@ export default function OpenedGallery() {
                 </div>
             </div>
 
-            {modalOpen && images.length > 0 && (
+            {modalOpen && flatImagesRowWise.length > 0 && (
                 <div
                     id="myModal"
                     className="modal"
                     style={{ display: "block" }}
-                    // onClick={handleModalClick}
                 >
                     <span className="close cursor position-absolute" onClick={closeModal}>
                         &times;
                     </span>
                     <div className="modal-content" id="modal-content">
-                        <div className="arrow-holder">
-                            <button className="prev" onClick={prevSlide}>&#10094;</button>
-                            <button className="next" onClick={nextSlide}>&#10095;</button>
-                        </div>
                         <img
-                            src={`${BASE_URL}/images/gallery/${galleryName}/${images[currentIndex].full || images[currentIndex].thumb}`}
+                            src={`${BASE_URL}/images/gallery/${galleryName}/${flatImagesRowWise[currentIndex].full || flatImagesRowWise[currentIndex].thumb}`}
                             alt=""
                             className="maxImg"
                             onContextMenu={(e) => e.preventDefault()}
                         />
+                        <div className="arrow-holder">
+                            <button className="prev" onClick={prevSlide}>&#10094;</button>
+                            <button className="next" onClick={nextSlide}>&#10095;</button>
+                        </div>
                     </div>
                 </div>
             )}

@@ -202,7 +202,7 @@ router.post("/:galleryName/images", verifyJWT, imageUpload.array("images", 20), 
         // Create resized/compressed thumbnail
         await sharp(maxFilePath)
             .resize(600) // adjust width as needed
-            .jpeg({ quality: 90 })
+            // .jpeg({ quality: 90 })
             .toFile(thumbFilePath);
 
         // Update layout

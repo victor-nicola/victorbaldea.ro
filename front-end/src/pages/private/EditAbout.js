@@ -1,13 +1,14 @@
 import { useRef, useEffect, useState } from 'react';
 import axios, { BASE_URL } from '../../api/axios';
 import ReactMarkdown from 'react-markdown';
-import imageCompression from "browser-image-compression";
 import '../../styles/edit-static.css';
 import '../../styles/about.css';
 import { useAuth } from '../../contexts/AuthContext';
 import useAxiosPrivate from '../../hooks/useAxiosPrivate';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import { useNavigate } from 'react-router-dom';
+import { processImage } from '../../utils/imageProcessor';
 
 function EditAbout() {
     const [editing, setEditing] = useState(false);
@@ -20,6 +21,7 @@ function EditAbout() {
     const axiosPrivate = useAxiosPrivate();
 
     const textareaRef = useRef();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const handleKeyDown = (event) => {
@@ -38,6 +40,17 @@ function EditAbout() {
             textarea?.removeEventListener("keydown", handleKeyDown);
         };
     }, [text]);
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if ((event.ctrlKey || event.metaKey) && event.code === "KeyS") {
+                event.preventDefault();
+                navigate(`/about`);
+            }
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [navigate]);
 
     const getText = async() => {
         try {
@@ -78,15 +91,8 @@ function EditAbout() {
 
         console.log("Original file size:", file.size / 1024, "KB");
 
-        // Compress the image
-        const options = {
-            maxSizeMB: 2,             // Target max size (e.g., 1 MB)
-            maxWidthOrHeight: 1920,   // Resize if needed
-            useWebWorker: true
-        };
-
         try {
-            const compressedFile = await imageCompression(file, options);
+            const compressedFile = await processImage(file, 1920, 4);
 
             console.log("Compressed file size:", compressedFile.size / 1024, "KB");
 
@@ -182,7 +188,7 @@ function EditAbout() {
                     </div>
                     <div className="col-6">
                         <div className='center-in-col'>
-                            <img src={previewURL ? previewURL : `${BASE_URL}/images/about.png`} className="about-image d-block" alt='' />
+                            <img src={previewURL ? previewURL : `${BASE_URL}/images/about.png`} className="about-edit-image d-block" alt='' />
                             <div className='btn-bar mt-3'>
                                 <input
                                     type="file"
@@ -203,9 +209,9 @@ function EditAbout() {
                 </div>
             </div>
             
-            <div className="container-fluid d-special-none pt-5 pb-5 flex-fill">
+            <div className="container-fluid d-special-none pt-5 pb-5 flex-fill" style={{marginTop: `${headerHeight}px`}}>
                 <div>
-                    <img src={previewURL ? previewURL : `${BASE_URL}/images/about.png`} className="about-image center-horizontal-relative" alt='' />
+                    <img src={previewURL ? previewURL : `${BASE_URL}/images/about.png`} className="about-edit-image center-horizontal-relative" alt='' />
                     <div className='btn-bar mt-3'>
                         <input
                             type="file"

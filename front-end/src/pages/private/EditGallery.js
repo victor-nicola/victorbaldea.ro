@@ -9,6 +9,7 @@ import {
     useSensors,
     DragOverlay,
     useDroppable,
+    TouchSensor,
 } from "@dnd-kit/core";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { BASE_URL } from "../../api/axios";
@@ -38,8 +39,7 @@ function DropZone({ id, isActive, style, isFirst = false }) {
     const baseHeight = isActive ? "24px" : "4px";
     const backgroundColor = isOver ? "#007bff" : isActive ? "#e9ecef" : "transparent";
 
-    if (!isActive)
-        return;
+    if (!isActive) return;
 
     return (
         <div
@@ -80,42 +80,38 @@ export default function EditGallery() {
     const [activeImage, setActiveImage] = useState(null);
     const [addingImage, setAddingImage] = useState(false);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-    const [columnCount, setColumnCount] = useState(3);
-    const [layoutMode, setLayoutMode] = useState("manual");
     const [imageColumns, setImageColumns] = useState({});
     const [imageOrder, setImageOrder] = useState([]);
     const axiosPrivate = useAxiosPrivate();
     const navigate = useNavigate();
 
-    // Use sensors for drag and drop
     const sensors = useSensors(
-        useSensor(MouseSensor, { activationConstraint: { distance: 10 } }),
-        useSensor(PointerSensor, { activationConstraint: { distance: 10 } })
+        useSensor(PointerSensor, { activationConstraint: { distance: 10 } }),
+        useSensor(TouchSensor, { activationConstraint: { delay: 150, tolerance: 5 } }),
+        useSensor(MouseSensor, { activationConstraint: { distance: 10 } })
     );
 
-    // Layout config similar to OpenedGallery:
+    const [overlayVisibleId, setOverlayVisibleId] = useState(null);
+
+    function handleToggleOverlay(id) {
+        setOverlayVisibleId((current) => (current === id ? null : id));
+    }
+
     const getLayoutConfig = useCallback(() => {
         if (windowWidth >= 992) return { columnCount: 3, imageWidth: 400 };
         if (windowWidth >= 504) return { columnCount: 1, imageWidth: 350 };
         return { columnCount: 1, imageWidth: windowWidth * 0.7 };
     }, [windowWidth]);
 
-    // On resize update windowWidth and columnCount accordingly
     useEffect(() => {
-        const handleResize = () => {
-            setWindowWidth(window.innerWidth);
-            const { columnCount: newColumnCount } = getLayoutConfig();
-            setColumnCount(newColumnCount);
-        };
+        const handleResize = () => setWindowWidth(window.innerWidth);
         handleResize();
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
-    }, [getLayoutConfig]);
+    }, []);
 
-    // Destructure layout values
-    const { columnCount: layoutColumnCount, imageWidth } = getLayoutConfig();
+    const { columnCount, imageWidth } = getLayoutConfig();
 
-    // Fetch images and layout
     const fetchImages = useCallback(async () => {
         try {
             const res = await axiosPrivate.get(`/gallery/${galleryName}`);
@@ -128,8 +124,6 @@ export default function EditGallery() {
                 .catch(() => null);
 
             if (savedLayout) {
-                setColumnCount(savedLayout.columnCount);
-                setLayoutMode(savedLayout.layoutMode);
                 setImageColumns(savedLayout.imageColumns || {});
                 setImageOrder(
                     savedLayout.imageOrder ||
@@ -158,7 +152,6 @@ export default function EditGallery() {
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [navigate, galleryName]);
 
-    // Create columns layout by distributing images by imageColumns or order
     const createLayout = (items) => {
         const columns = Array.from({ length: columnCount }, () => []);
         const sortedItems = [...items].sort((a, b) => {
@@ -182,7 +175,6 @@ export default function EditGallery() {
 
     const layout = createLayout(images);
 
-    // Drag and drop handlers
     const handleDragStart = ({ active }) => {
         const img = images.find((i) => i.thumb === active.id);
         setActiveImage(img || null);
@@ -198,13 +190,13 @@ export default function EditGallery() {
 
         if (over.id.startsWith("drop-zone-")) {
             const parts = over.id.split("-");
-            const colIndex = parseInt(parts[2]);
+            const dropColIndex = parseInt(parts[2]);
             const position = parseInt(parts[3]);
 
             const currentLayout = createLayout(images);
             const newOrderArray = [];
             currentLayout.forEach((col, idx) => {
-                if (idx === colIndex) {
+                if (idx === dropColIndex) {
                     const colWithoutDragged = col.filter(
                         (img) => img.thumb !== draggedId
                     );
@@ -219,7 +211,7 @@ export default function EditGallery() {
                 }
             });
 
-            const newImageColumns = { ...imageColumns, [draggedId]: colIndex };
+            const newImageColumns = { ...imageColumns, [draggedId]: dropColIndex };
             setImageOrder(newOrderArray);
             setImageColumns(newImageColumns);
             saveLayout(newImageColumns, newOrderArray);
@@ -227,22 +219,22 @@ export default function EditGallery() {
         }
 
         if (over.id.startsWith("column-")) {
-            const colIndex = parseInt(over.id.replace("column-", ""));
+            const columnIndex = parseInt(over.id.split("-")[1]);
+
             const newOrderArray = imageOrder.filter((id) => id !== draggedId);
             newOrderArray.push(draggedId);
-            const newImageColumns = { ...imageColumns, [draggedId]: colIndex };
+            const newImageColumns = { ...imageColumns, [draggedId]: columnIndex };
             setImageOrder(newOrderArray);
             setImageColumns(newImageColumns);
             saveLayout(newImageColumns, newOrderArray);
         }
     };
 
-    // Save layout to backend
     const saveLayout = async (newImageColumns, newImageOrder = imageOrder) => {
         try {
             await axiosPrivate.post(`/gallery/${galleryName}/layout`, {
                 columnCount,
-                layoutMode,
+                layoutMode: "manual",
                 imageColumns: newImageColumns,
                 imageOrder: newImageOrder,
             });
@@ -252,7 +244,6 @@ export default function EditGallery() {
         }
     };
 
-    // Delete image handler
     const handleDelete = async (filename) => {
         if (!window.confirm("Delete this image?")) return;
         try {
@@ -269,16 +260,14 @@ export default function EditGallery() {
         }
     };
 
-    // Add new images handler
     const handleSaveAdd = async (files) => {
         if (!files || files.length === 0) return;
-
         try {
             const formData = new FormData();
             files.forEach(file => formData.append("images", file));
-
-            await axiosPrivate.post(`/gallery/${galleryName}/images`, formData, {headers: { "Content-Type": "multipart/form-data" }});
-
+            await axiosPrivate.post(`/gallery/${galleryName}/images`, formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
             setAddingImage(false);
             fetchImages();
         } catch (error) {
@@ -297,6 +286,12 @@ export default function EditGallery() {
         const ro = new ResizeObserver(update);
         if (headerRef.current) ro.observe(headerRef.current);
         return () => ro.disconnect();
+    }, []);
+
+    useEffect(() => {
+        const onClickOutside = () => setOverlayVisibleId(null);
+        window.addEventListener("click", onClickOutside);
+        return () => window.removeEventListener("click", onClickOutside);
     }, []);
 
     return (
@@ -345,12 +340,10 @@ export default function EditGallery() {
                                                 id={item.thumb}
                                                 src={`${BASE_URL}/images/gallery/${galleryName}/${item.thumb}`}
                                                 onDelete={() => handleDelete(item.thumb)}
+                                                showDeleteOverlay={overlayVisibleId === item.thumb}
+                                                onToggleDeleteOverlay={() => handleToggleOverlay(item.thumb)}
                                                 isDraggingGlobal={!!activeImage}
-                                                style={{
-                                                    width: "100%",
-                                                    marginBottom: 0,
-                                                    breakInside: "avoid",
-                                                }}
+                                                style={{ width: "100%", marginBottom: 0, breakInside: "avoid" }}
                                             />
                                         </div>
                                         <DropZone id={`drop-zone-${colIndex}-${index + 1}`} isActive={!!activeImage} />
